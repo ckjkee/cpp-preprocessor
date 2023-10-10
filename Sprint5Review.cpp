@@ -14,7 +14,7 @@ path operator""_p(const char* data, std::size_t sz) {
     return path(data, data + sz);
 }
 
-bool Preprocess(istream& input, ostream& output, const path& curr_file, const vector<path>& include_directories) {
+bool RecurPreprocess(istream& input, ostream& output, const path& curr_file, const vector<path>& include_directories) {
     static regex local (R"/(\s*#\s*include\s*"([^"]*)"\s*)/");
     static regex global (R"/(\s*#\s*include\s*<([^>]*)>\s*)/");
     smatch m;
@@ -29,7 +29,7 @@ bool Preprocess(istream& input, ostream& output, const path& curr_file, const ve
             if (filesystem::exists(new_path)) {
                 ifstream read(new_path, ios::in);
                 if (read.is_open()) {
-                    if (!Preprocess(read, output, new_path, include_directories)) {
+                    if (!RecurPreprocess(read, output, new_path, include_directories)) {
                         return false;
                     }
                     continue;
@@ -50,7 +50,7 @@ bool Preprocess(istream& input, ostream& output, const path& curr_file, const ve
                 if (filesystem::exists(new_path)) {
                     ifstream read(new_path, ios::in);
                     if (read.is_open()) {
-                        if (!Preprocess(read, output, new_path, include_directories)) {
+                        if (!RecurPreprocess(read, output, new_path, include_directories)) {
                             return false;
                         }
                         valid = true;
@@ -83,8 +83,11 @@ bool Preprocess(const path& in_file, const path& out_file, const vector<path>& i
         return false;
     }
     ofstream out(out_file, ios::out);
+    if(!out){
+        return false;
+    }
     
-    return Preprocess(in, out, in_file, include_directories);
+    return RecurPreprocess(in, out, in_file, include_directories);
 }
 
 string GetFileContents(string file) {
