@@ -72,7 +72,7 @@ bool RecurPreprocess(istream& input, ostream& output, const path& curr_file, con
     }
     return true;
 }
-// напишите эту функцию
+
 bool Preprocess(const path& in_file, const path& out_file, const vector<path>& include_directories){
     if(!filesystem::exists(in_file)){
         return false;
@@ -93,7 +93,7 @@ bool Preprocess(const path& in_file, const path& out_file, const vector<path>& i
 string GetFileContents(string file) {
     ifstream stream(file);
 
-    // конструируем string по двум итераторам
+   
     return {(istreambuf_iterator<char>(stream)), istreambuf_iterator<char>()};
 }
 
